@@ -4,10 +4,12 @@ const fs = require("fs");
 
 app = express();
 
-cron.schedule("*/1 * * * *", function () {
+cron.schedule("01 16 * * 1,5", function () {
   console.log("---------------------");
   console.log("Running Cron Job");
+}, {
+  timezone: "Asia/Ho_Chi_Minh"
 });
 
 console.log("START server");
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
