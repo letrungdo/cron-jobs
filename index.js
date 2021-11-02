@@ -29,7 +29,7 @@ function checkin(type) {
 
 // Checkin
 cron.schedule(
-  "30 7 * * 1,5",
+  "30 7 * * 1-5",
   function () {
     checkin("checkin");
   },
@@ -40,7 +40,7 @@ cron.schedule(
 
 // Checkout
 cron.schedule(
-  "30 17 * * 1,5",
+  "30 17 * * 1-5",
   function () {
     checkin("checkout");
   },
