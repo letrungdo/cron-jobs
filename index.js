@@ -1,37 +1,84 @@
-const cron = require("node-cron");
-const express = require("express");
-const axios = require("axios");
+import axios from "axios";
+import dotenv from "dotenv";
+import express from "express";
+import cron from "node-cron";
+import fetch from "node-fetch";
 
-app = express();
+dotenv.config();
+const app = express();
 
 app.get("/", (_req, res) => {
   res.send("Welcome to GMO auto checkin/out");
 });
 
-function checkin(type) {
+const getAuthenCookie = async (body) => {
+  const result = await fetch("https://checkin.runsystem.info/auth/login", {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const cookie = result.headers.get("set-cookie");
+  if (cookie?.includes("Authorization=Bearer")) {
+    return cookie;
+  }
+  return "";
+};
+
+app.get("/checkin", async (_req, res) => {
+  checkin("checkin")
+    .then(function (res) {
+      console.log(res.data);
+      res.send(JSON.stringify(res.data));
+    })
+    .catch(function (e) {
+      res.send(e);
+    });
+});
+
+app.get("/checkout", (_req, res) => {
+  checkin("checkout")
+    .then(function (res) {
+      console.log(res.data);
+      res.send(JSON.stringify(res.data));
+    })
+    .catch(function (e) {
+      res.send(e);
+    });
+});
+
+const checkin = async (type) => {
   console.log("Start " + type);
-  axios("https://checkin.runsystem.info/attendance/submit", {
+  const body = {
+    email: process.env.EMAIL,
+    password: process.env.PASSWORD,
+  };
+  const authenCookie = await getAuthenCookie(body);
+  console.log(authenCookie);
+  return axios("https://checkin.runsystem.info/attendance/submit", {
     method: "POST",
     maxRedirects: 0,
     headers: {
       "Content-Type": "application/json",
-      Cookie: process.env.GMO_CHECKIN_AUTH,
+      Cookie: authenCookie,
     },
     data: {
       type: type,
       emoji: 3,
       comment: "",
     },
-  }).then(function (res) {
-    console.log(res.data);
   });
-}
+};
 
 // Checkin
 cron.schedule(
   "30 7 * * 1-5",
   function () {
-    checkin("checkin");
+    checkin("checkin").then(function (res) {
+      console.log(res.data);
+    });
   },
   {
     timezone: "Asia/Ho_Chi_Minh",
@@ -42,7 +89,9 @@ cron.schedule(
 cron.schedule(
   "30 17 * * 1-5",
   function () {
-    checkin("checkout");
+    checkin("checkout").then(function (res) {
+      console.log(res.data);
+    });
   },
   {
     timezone: "Asia/Ho_Chi_Minh",
