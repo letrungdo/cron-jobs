@@ -34,20 +34,24 @@ app.get("/getAuthen", async (_req, res) => {
     email: process.env.EMAIL,
     password: process.env.PASSWORD,
   };
-
-  request.post(
-    {
-      url: "https://checkin.runsystem.info/auth/login",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    },
-    function (error, response, body) {
-      console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
-      console.log("body:", body); // Print the HTML for the Google homepage.
-      console.log(response.headers);
-      res.send(JSON.stringify(response.headers["set-cookie"]));
-    }
-  );
+  try {
+    request.post(
+      {
+        url: "https://checkin.runsystem.info/auth/login",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      },
+      function (error, response, body) {
+        console.log("body:", body); // Print the HTML for the Google homepage.
+        console.log(response.headers);
+        console.log(error);
+        res.send(JSON.stringify(response.headers["set-cookie"][0]));
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+  
 });
 
 app.get("/checkin", async (_req, res) => {
