@@ -36,13 +36,15 @@ app.get("/getAuthen", async (_req, res) => {
   const result = await fetch("https://checkin.runsystem.info/auth/login", {
     method: "POST",
     redirect: "manual",
+    referrerPolicy: "no-referrer",
+    credentials: "omit",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(body),
   });
-  
-  res.send(JSON.stringify(result));
+
+  res.send(JSON.stringify(result.headers.get("set-cookie")));
 });
 
 app.get("/checkin", async (_req, res) => {
