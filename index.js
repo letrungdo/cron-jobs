@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import cron from "node-cron";
 import fetch from "node-fetch";
+import request from "request";
 
 dotenv.config();
 const app = express();
@@ -33,18 +34,20 @@ app.get("/getAuthen", async (_req, res) => {
     email: process.env.EMAIL,
     password: process.env.PASSWORD,
   };
-  const result = await fetch("https://checkin.runsystem.info/auth/login", {
-    method: "POST",
-    redirect: "manual",
-    referrerPolicy: "no-referrer",
-    credentials: "omit",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
 
-  res.send(JSON.stringify(result.headers.get("set-cookie")));
+  request.post(
+    {
+      url: "https://checkin.runsystem.info/auth/login",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    },
+    function (error, response, body) {
+      console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
+      console.log("body:", body); // Print the HTML for the Google homepage.
+      console.log(response.headers);
+      res.send(JSON.stringify(response.headers["set-cookie"]));
+    }
+  );
 });
 
 app.get("/checkin", async (_req, res) => {
