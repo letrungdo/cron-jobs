@@ -28,6 +28,19 @@ const getAuthenCookie = async (body) => {
   return "";
 };
 
+app.get("/getAuthen", async (_req, res) => {
+  const result = await fetch("https://checkin.runsystem.info/auth/login", {
+    method: "POST",
+    redirect: "manual",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  
+  res.send(JSON.stringify(result));
+});
+
 app.get("/checkin", async (_req, res) => {
   checkin("checkin")
     .then(function (res) {
