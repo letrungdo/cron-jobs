@@ -20,6 +20,7 @@ const getAuthenCookie = async (body) => {
     },
     body: JSON.stringify(body),
   });
+  console.log("___getAuthenCookie:", result.headers, result);
   const cookie = result.headers.get("set-cookie");
   if (cookie?.includes("Authorization=Bearer")) {
     return cookie;
