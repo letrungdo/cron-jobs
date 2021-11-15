@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import express from "express";
 import cron from "node-cron";
 import fetch from "node-fetch";
-import request from "request";
 
 dotenv.config();
 const app = express();
@@ -21,38 +20,12 @@ const getAuthenCookie = async (body) => {
     },
     body: JSON.stringify(body),
   });
-  console.log("___getAuthenCookie:", result.headers, result);
   const cookie = result.headers.get("set-cookie");
   if (cookie?.includes("Authorization=Bearer")) {
     return cookie;
   }
-  return "";
+  return process.env.AUTH_TOKEN || "";
 };
-
-app.get("/getAuthen", async (_req, res) => {
-  const body = {
-    email: process.env.EMAIL,
-    password: process.env.PASSWORD,
-  };
-  try {
-    request.post(
-      {
-        url: "https://checkin.runsystem.info/auth/login",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      },
-      function (error, response, body) {
-        console.log("body:", body); // Print the HTML for the Google homepage.
-        console.log(response.headers);
-        console.log(error);
-        res.send(JSON.stringify(response.headers["set-cookie"][0]));
-      }
-    );
-  } catch (error) {
-    console.log(error);
-  }
-  
-});
 
 app.get("/checkin", async (_req, res) => {
   checkin("checkin")
