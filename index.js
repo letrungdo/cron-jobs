@@ -29,6 +29,10 @@ const getAuthenCookie = async (body) => {
 };
 
 app.get("/getAuthen", async (_req, res) => {
+  const body = {
+    email: process.env.EMAIL,
+    password: process.env.PASSWORD,
+  };
   const result = await fetch("https://checkin.runsystem.info/auth/login", {
     method: "POST",
     redirect: "manual",
