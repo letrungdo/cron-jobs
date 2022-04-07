@@ -12,7 +12,7 @@ app.get("/", (_req, res) => {
 });
 
 const getAuthenCookie = async (body) => {
-  const result = await fetch("https://checkin.runsystem.info/auth/login", {
+  const result = await fetch("https://checkin.runsystem.work/auth/login", {
     method: "POST",
     redirect: "manual",
     headers: {
@@ -57,7 +57,7 @@ const checkin = async (type) => {
   };
   const authenCookie = await getAuthenCookie(body);
   console.log(authenCookie);
-  return axios("https://checkin.runsystem.info/attendance/submit", {
+  return axios("https://checkin.runsystem.work/attendance/submit", {
     method: "POST",
     maxRedirects: 0,
     headers: {
